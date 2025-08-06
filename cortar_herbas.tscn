@@ -1,0 +1,73 @@
+[gd_scene load_steps=5 format=3 uid="uid://binb0gyalviiw"]
+
+[ext_resource type="Script" uid="uid://btdavbjif0no6" path="res://herba.gd" id="1_0t7yv"]
+[ext_resource type="Script" uid="uid://bylthqosx4wuq" path="res://cortar_herbas.gd" id="1_o5qf4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o5qf4"]
+size = Vector2(80, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wkfnu"]
+size = Vector2(8, 32)
+
+[node name="CortarHerbas" type="Node2D"]
+script = ExtResource("1_o5qf4")
+
+[node name="Barra" type="Node2D" parent="."]
+
+[node name="Polygon2D" type="Polygon2D" parent="Barra"]
+position = Vector2(589, 342)
+color = Color(0.847474, 0.847474, 0.847474, 1)
+offset = Vector2(-68, 27)
+polygon = PackedVector2Array(-384, -48, -384, -8, 520, -8, 520, -48)
+uv = PackedVector2Array(-384, -48, -384, -8, 40, -8, 40, -48)
+
+[node name="Herba" type="Node2D" parent="."]
+visible = false
+position = Vector2(1000, 342)
+script = ExtResource("1_0t7yv")
+
+[node name="FormaHerba" type="Polygon2D" parent="Herba"]
+color = Color(1, 1, 0, 1)
+offset = Vector2(369, 43)
+polygon = PackedVector2Array(-408, -56, -408, -32, -328, -32, -328, -56)
+uv = PackedVector2Array(-408, -56, -408, -32, -328, -32, -328, -56)
+
+[node name="Area2D" type="Area2D" parent="Herba"]
+position = Vector2(-2, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Herba/Area2D"]
+position = Vector2(3, -1)
+shape = SubResource("RectangleShape2D_o5qf4")
+
+[node name="Tixeira" type="Node2D" parent="."]
+position = Vector2(141, 342)
+
+[node name="Polygon2D" type="Polygon2D" parent="Tixeira"]
+color = Color(1, 0, 0, 1)
+offset = Vector2(524, 39)
+polygon = PackedVector2Array(-528, -56, -528, -24, -520, -24, -520, -56)
+uv = PackedVector2Array(-528, -56, -528, -24, -520, -24, -520, -56)
+
+[node name="Area2D" type="Area2D" parent="Tixeira"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tixeira/Area2D"]
+position = Vector2(0, -1)
+shape = SubResource("RectangleShape2D_wkfnu")
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="Contador" type="Node2D" parent="."]
+position = Vector2(136, 379)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Contador"]
+offset_right = 197.0
+offset_bottom = 26.0
+text = "Herbas cotadas:"
+fit_content = true
+
+[node name="ContadorHerbasCortadas" type="RichTextLabel" parent="Contador"]
+offset_left = 130.0
+offset_top = 1.0
+offset_right = 170.0
+offset_bottom = 41.0
+text = "0"
