@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://bylthqosx4wuq" path="res://cortar_herbas.gd" id="1_o5qf4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o5qf4"]
-size = Vector2(80, 24)
+size = Vector2(16, 24)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wkfnu"]
 size = Vector2(8, 32)
@@ -24,13 +24,13 @@ uv = PackedVector2Array(-384, -48, -384, -8, 40, -8, 40, -48)
 [node name="Herba" type="Node2D" parent="."]
 visible = false
 z_index = 1
-position = Vector2(1000, 342)
+position = Vector2(1032, 342)
 script = ExtResource("1_0t7yv")
 
 [node name="FormaHerba" type="Polygon2D" parent="Herba"]
 color = Color(1, 1, 0, 1)
 offset = Vector2(369, 43)
-polygon = PackedVector2Array(-408, -56, -408, -32, -328, -32, -328, -56)
+polygon = PackedVector2Array(-376, -56, -376, -32, -360, -32, -360, -56)
 uv = PackedVector2Array(-408, -56, -408, -32, -328, -32, -328, -56)
 
 [node name="Area2D" type="Area2D" parent="Herba"]
