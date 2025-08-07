@@ -3,7 +3,9 @@ extends Node2D
 @onready var timer = $Timer
 @onready var segundos = $Segundos
 
+var herbaModelo
 var barra
+
 var herbas
 
 var game_over = false
@@ -11,12 +13,42 @@ var game_over = false
 var contador_herbas_cortadas = 0
 var contador_tempo = 0
 
-var limite_tempo = 20
+var limite_tempo
+var tamano_barra
+var velocidade
+var maxDensidade = 4
+var densidade
+
+var analizando_corte = false
 
 func _get_random_wait_time():
-	return randf_range(0.500, 4.0)	
+	return randf_range(densidade / 2, 3 * densidade / 2)
+
+func _init_game():
+	velocidade = int(randf_range(100.0, 400.0))
+	tamano_barra = int(randf_range(100.0, 1000.0))
+	limite_tempo = int(randf_range(60.0, 120.0))
+	densidade = randf_range(1.0, maxDensidade)
+
+	contador_tempo = limite_tempo
+	
+	print(str("Velocidade: ", velocidade))
+	print(str("Tamaño de barra: ", tamano_barra))
+	print(str("Limite de tempo: ", limite_tempo))
+	print(str("Densidade: ", densidade))
+	
+	$Parametros/Velocidade.text = str(velocidade)
+	$Parametros/Tamano.text = str(tamano_barra)
+	$Parametros/Densidade.text = str(int(maxDensidade + 1 - densidade))
+	_actualiza_contador_tempo()
+	barra.custom_minimum_size.x = tamano_barra
 	
 func _ready():
+	herbaModelo = $VBoxContainer/HBoxContainer/Barra/HerbaColorRect
+	barra = $VBoxContainer/HBoxContainer/Barra;
+
+	_init_game()
+	
 	timer = $Timer
 	timer.connect("timeout", _on_timer_timeout)
 	timer.wait_time = _get_random_wait_time()
@@ -27,9 +59,28 @@ func _ready():
 	segundos.start()
 	
 	herbas = []
-	contador_tempo = limite_tempo
-	barra = $VBoxContainer/HBoxContainer/Barra;
+
+	$NovaPartida.connect("pressed", _on_nova_partida_button_pressed)
+
+func _on_nova_partida_button_pressed():
+	contador_herbas_cortadas = 0
 	
+	for herba in herbas:
+		barra.remove_child(herba)
+	herbas.clear()
+	
+	$GameOverText.visible = false
+	_actualiza_contador_herbas()
+	$Contador/TextoFallaches.visible = false
+	$Contador/TextoOk.visible = false
+	
+	_init_game()
+
+	game_over = false
+
+	#Quitámoslle o focus ao botón
+	$NovaPartida.release_focus()
+
 func _on_timer_timeout():
 	if !game_over:
 		# Borramos as herbas que saen da pantalla
@@ -38,8 +89,15 @@ func _on_timer_timeout():
 				barra.remove_child(herba)
 				herbas.erase(herba)
 
-		var herba = $VBoxContainer/HBoxContainer/Barra/HerbaColorRect.duplicate()
+		var herba = herbaModelo.duplicate()
 		herba.position.x = barra.position.x + barra.custom_minimum_size.x
+		
+		var tamano = randf_range(10.0, 40.0)
+		
+		herba.size.x = tamano
+		herba.get_node("Area2D").get_node("CollisionShape2D").shape.size.x = tamano
+		herba.get_node("Area2D").get_node("CollisionShape2D").position.x = tamano / 2
+		
 		# Hacemos que a herba sexa visible
 		herba.visible = true
 		barra.add_child(herba)
@@ -58,9 +116,13 @@ func _on_segundos_timeout():
 func _actualiza_contador_tempo():
 	$Contador/ContadorTempo.text = str(contador_tempo)
 
+func _actualiza_contador_herbas():
+	$Contador/ContadorHerbasCortadas.text = str(contador_herbas_cortadas)
+
 func _process(_delta):
 	if !game_over:
-		if Input.is_action_just_pressed("ui_accept"):
+		if Input.is_action_just_pressed("ui_accept") and !analizando_corte:
+			analizando_corte = true
 			print("Pulsado espacio")
 			var huboCorte = false
 			
@@ -68,7 +130,7 @@ func _process(_delta):
 				if herba.get_node("Area2D").has_overlapping_areas() and herba.get_node("Area2D").get_overlapping_areas().has($VBoxContainer/HBoxContainer/Barra/Tixeira.get_node("Area2D")):
 					print("Cortada herba")
 					contador_herbas_cortadas = contador_herbas_cortadas + 1
-					$Contador/ContadorHerbasCortadas.text = str(contador_herbas_cortadas)
+					_actualiza_contador_herbas()
 					barra.remove_child(herba)
 					herbas.erase(herba)
 					huboCorte = true
@@ -79,10 +141,12 @@ func _process(_delta):
 				$Contador/TextoFallaches.visible = true
 				contador_tempo = max(contador_tempo - 10, 0)
 				_actualiza_contador_tempo()
+				
+			analizando_corte = false
 					
 		for herba in herbas:			
 			# Movemos a herba á esqueda
-			herba.position.x -= _delta * 200
+			herba.position.x -= _delta * velocidade
 			
 		if contador_tempo <= 0:
 			game_over = true
