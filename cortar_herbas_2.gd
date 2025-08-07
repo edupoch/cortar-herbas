@@ -15,6 +15,7 @@ var herbaAltaModelo
 var barra
 var barraAlta
 var tixeira
+var cesto
 
 var herbas
 var herbasAltas
@@ -44,7 +45,7 @@ func _get_random_wait_time(esAlta):
 func _init_game():
 	velocidade = int(randf_range(100.0, 400.0))
 	tamano_barra = int(randf_range(100.0, 1000.0))
-	limite_tempo = int(randf_range(60.0, 120.0))
+	limite_tempo = int(randf_range(20.0, 40.0))
 	densidade = randf_range(1.0, maxDensidade)
 
 	contador_tempo = limite_tempo
@@ -61,6 +62,9 @@ func _init_game():
 	barra.custom_minimum_size.x = tamano_barra
 	barraAlta.custom_minimum_size.x = tamano_barra
 	$Contador/ContadorEspazo.text = str(maxHerbasACortar)
+	for herbaCortada in cesto.get_children():
+		cesto.remove_child(herbaCortada)
+		herbaCortada.queue_free()
 	
 func _ready():
 	herbaModelo = $VBoxContainer/HBoxContainer/Barra/HerbaColorRect
@@ -68,6 +72,7 @@ func _ready():
 	barra = $VBoxContainer/HBoxContainer/Barra
 	barraAlta = $VBoxContainer/HBoxContainer2/BarraAlta
 	tixeira = $VBoxContainer/HBoxContainer/Barra/Tixeira
+	cesto = $Contador/Cesto
 
 	_init_game()
 	
@@ -178,8 +183,15 @@ func _comproba_corte(herbasAux, barraAux):
 			print("Cortada herba")
 			contador_herbas_cortadas = contador_herbas_cortadas + 1
 			_actualiza_contador_herbas()
-			barraAux.remove_child(herba)
+			barraAux.remove_child(herba)		
+			
+			var herbaTemp = herba.duplicate()
+			herbaTemp.position.x = 0
+			herbaTemp.custom_minimum_size.x = 20
+			cesto.add_child(herbaTemp)
+			
 			herbasAux.erase(herba)
+			
 			houboCorte = true
 			$Contador/TextoOk.visible = true
 			$Contador/ContadorEspazo.text = str(maxHerbasACortar - contador_herbas_cortadas)
