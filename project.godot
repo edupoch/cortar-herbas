@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Cortar Herbas"
-run/main_scene="uid://binb0gyalviiw"
+run/main_scene="uid://digr740ruehlf"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 

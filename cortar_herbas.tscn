@@ -65,7 +65,7 @@ position = Vector2(136, 379)
 [node name="RichTextLabel" type="RichTextLabel" parent="Contador"]
 offset_right = 197.0
 offset_bottom = 26.0
-text = "Herbas cotadas:"
+text = "Herbas cortadas:"
 fit_content = true
 
 [node name="RichTextLabel2" type="RichTextLabel" parent="Contador"]
@@ -76,16 +76,16 @@ text = "Tempo restante:"
 fit_content = true
 
 [node name="ContadorHerbasCortadas" type="RichTextLabel" parent="Contador"]
-offset_left = 130.0
+offset_left = 135.0
 offset_top = 1.0
-offset_right = 170.0
+offset_right = 175.0
 offset_bottom = 41.0
 text = "0"
 
 [node name="ContadorTempo" type="RichTextLabel" parent="Contador"]
-offset_left = 130.0
+offset_left = 135.0
 offset_top = 25.0
-offset_right = 170.0
+offset_right = 175.0
 offset_bottom = 65.0
 text = "0"
 
