@@ -158,8 +158,21 @@ offset_bottom = 41.0
 theme_override_colors/default_color = Color(0, 1, 0, 1)
 text = "Ben!"
 
-[node name="GameOverText" type="RichTextLabel" parent="."]
+[node name="GameOverText" type="Node2D" parent="."]
 visible = false
+
+[node name="GameOverText2" type="RichTextLabel" parent="GameOverText"]
+z_index = 100
+offset_left = 121.0
+offset_top = 115.0
+offset_right = 1063.0
+offset_bottom = 396.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/normal_font_size = 100
+text = "FIN DO PASEO"
+horizontal_alignment = 1
+
+[node name="GameOverText" type="RichTextLabel" parent="GameOverText"]
 z_index = 100
 offset_left = 119.0
 offset_top = 113.0
