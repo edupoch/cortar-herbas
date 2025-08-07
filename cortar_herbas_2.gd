@@ -3,6 +3,11 @@ extends Node2D
 @onready var timer = $Timer
 @onready var segundos = $Segundos
 
+var maxDensidade = 4
+var minTamanoHerba = 10
+var maxTamanoHerba = 40
+var maxHerbasACortar = 9
+
 var herbaModelo
 var barra
 
@@ -16,7 +21,6 @@ var contador_tempo = 0
 var limite_tempo
 var tamano_barra
 var velocidade
-var maxDensidade = 4
 var densidade
 
 var analizando_corte = false
@@ -42,6 +46,7 @@ func _init_game():
 	$Parametros/Densidade.text = str(int(maxDensidade + 1 - densidade))
 	_actualiza_contador_tempo()
 	barra.custom_minimum_size.x = tamano_barra
+	$Contador/ContadorEspazo.text = str(maxHerbasACortar)
 	
 func _ready():
 	herbaModelo = $VBoxContainer/HBoxContainer/Barra/HerbaColorRect
@@ -92,11 +97,19 @@ func _on_timer_timeout():
 		var herba = herbaModelo.duplicate()
 		herba.position.x = barra.position.x + barra.custom_minimum_size.x
 		
-		var tamano = randf_range(10.0, 40.0)
+		var tamano = randf_range(minTamanoHerba, maxTamanoHerba)
 		
 		herba.size.x = tamano
 		herba.get_node("Area2D").get_node("CollisionShape2D").shape.size.x = tamano
 		herba.get_node("Area2D").get_node("CollisionShape2D").position.x = tamano / 2
+		
+		if (tamano < minTamanoHerba + maxTamanoHerba / 3):
+			herba.color = '#ff3400'
+		else:
+			if (tamano < minTamanoHerba + 2 * maxTamanoHerba / 3):
+				herba.color = '#ffff80'
+			else:
+				herba.color = '#3ba75b'
 		
 		# Hacemos que a herba sexa visible
 		herba.visible = true
@@ -135,6 +148,7 @@ func _process(_delta):
 					herbas.erase(herba)
 					huboCorte = true
 					$Contador/TextoOk.visible = true
+					$Contador/ContadorEspazo.text = str(maxHerbasACortar - contador_herbas_cortadas)
 					break
 					
 			if !huboCorte:
@@ -142,12 +156,12 @@ func _process(_delta):
 				contador_tempo = max(contador_tempo - 10, 0)
 				_actualiza_contador_tempo()
 				
-			analizando_corte = false
+			analizando_corte = false 
 					
 		for herba in herbas:			
 			# Movemos a herba á esqueda
 			herba.position.x -= _delta * velocidade
 			
-		if contador_tempo <= 0:
+		if contador_tempo <= 0 or contador_herbas_cortadas >= maxHerbasACortar:
 			game_over = true
 			$GameOverText.visible = true
