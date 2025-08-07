@@ -56,6 +56,7 @@ layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_jeayo")
 
 [node name="Tixeira" type="ColorRect" parent="VBoxContainer/HBoxContainer/Barra"]
+layout_mode = 0
 offset_right = 10.0
 offset_bottom = 40.0
 color = Color(0, 0.568798, 0.847188, 1)

@@ -34,11 +34,12 @@ var densidade
 
 var analizando_corte = false
 
-func _get_random_wait_time():
-	return randf_range(densidade / 2, 3 * densidade / 2)
-	
-func _get_random_wait_time_altas():
-	return randf_range(densidade / 2, 3 * densidade / 2) * 2  
+func _get_random_wait_time(esAlta):
+	var wait_time = randf_range(densidade / 2, 3 * densidade / 2)
+	if (esAlta):
+		wait_time = wait_time * 2
+		
+	return wait_time
 
 func _init_game():
 	velocidade = int(randf_range(100.0, 400.0))
@@ -72,12 +73,12 @@ func _ready():
 	
 	timer = $Timer
 	timer.connect("timeout", _on_timer_timeout)
-	timer.wait_time = _get_random_wait_time()
+	timer.wait_time = _get_random_wait_time(false)
 	timer.start()
 	
 	timerAlta = $TimerAlta
 	timerAlta.connect("timeout", _on_timerAlta_timeout)
-	timerAlta.wait_time = _get_random_wait_time()
+	timerAlta.wait_time = _get_random_wait_time(true)
 	timerAlta.start()
 	
 	segundos = $Segundos
@@ -110,70 +111,44 @@ func _on_nova_partida_button_pressed():
 
 	#Quitámoslle o focus ao botón
 	$NovaPartida.release_focus()
+	
+func creaHerba(herbaModeloAux, herbasAux, barraAux, timerAux, esAltaAux):
+	if !game_over:
+		# Borramos as herbas que saen da pantalla
+		for herba in herbasAux:
+			if herba.position.x < 0:
+				barraAux.remove_child(herba)
+				herbasAux.erase(herba)
+
+		var herba = herbaModeloAux.duplicate()
+		herba.position.x = barraAux.position.x + barraAux.custom_minimum_size.x
+		
+		var tamano = randf_range(minTamanoHerba, maxTamanoHerba)
+		
+		herba.size.x = tamano
+		herba.get_node("Area2D").get_node("CollisionShape2D").shape.size.x = tamano
+		herba.get_node("Area2D").get_node("CollisionShape2D").position.x = tamano / 2
+		
+		if (tamano < minTamanoHerba + maxTamanoHerba / 3):
+			herba.color = '#ff3400'
+		else:
+			if (tamano < minTamanoHerba + 2 * maxTamanoHerba / 3):
+				herba.color = '#ffff80'
+			else:
+				herba.color = '#3ba75b'
+		
+		# Hacemos que a herba sexa visible
+		herba.visible = true
+		barraAux.add_child(herba)
+		herbasAux.append(herba)
+		
+		timer.wait_time = _get_random_wait_time(esAltaAux)
 
 func _on_timer_timeout():
-	if !game_over:
-		# Borramos as herbas que saen da pantalla
-		for herba in herbas:
-			if herba.position.x < 0:
-				barra.remove_child(herba)
-				herbas.erase(herba)
-
-		var herba = herbaModelo.duplicate()
-		herba.position.x = barra.position.x + barra.custom_minimum_size.x
-		
-		var tamano = randf_range(minTamanoHerba, maxTamanoHerba)
-		
-		herba.size.x = tamano
-		herba.get_node("Area2D").get_node("CollisionShape2D").shape.size.x = tamano
-		herba.get_node("Area2D").get_node("CollisionShape2D").position.x = tamano / 2
-		
-		if (tamano < minTamanoHerba + maxTamanoHerba / 3):
-			herba.color = '#ff3400'
-		else:
-			if (tamano < minTamanoHerba + 2 * maxTamanoHerba / 3):
-				herba.color = '#ffff80'
-			else:
-				herba.color = '#3ba75b'
-		
-		# Hacemos que a herba sexa visible
-		herba.visible = true
-		barra.add_child(herba)
-		herbas.append(herba)
-		
-		timer.wait_time = _get_random_wait_time()
+	creaHerba(herbaModelo, herbas, barra, timer, false)
 		
 func _on_timerAlta_timeout():
-	if !game_over:
-		# Borramos as herbas que saen da pantalla
-		for herba in herbasAltas:
-			if herba.position.x < 0:
-				barraAlta.remove_child(herba)
-				herbasAltas.erase(herba)
-
-		var herba = herbaAltaModelo.duplicate()
-		herba.position.x = barraAlta.position.x + barraAlta.custom_minimum_size.x
-		
-		var tamano = randf_range(minTamanoHerba, maxTamanoHerba)
-		
-		herba.size.x = tamano
-		herba.get_node("Area2D").get_node("CollisionShape2D").shape.size.x = tamano
-		herba.get_node("Area2D").get_node("CollisionShape2D").position.x = tamano / 2
-		
-		if (tamano < minTamanoHerba + maxTamanoHerba / 3):
-			herba.color = '#ff3400'
-		else:
-			if (tamano < minTamanoHerba + 2 * maxTamanoHerba / 3):
-				herba.color = '#ffff80'
-			else:
-				herba.color = '#3ba75b'
-		
-		# Hacemos que a herba sexa visible
-		herba.visible = true
-		barraAlta.add_child(herba)
-		herbasAltas.append(herba)
-		
-		timerAlta.wait_time = _get_random_wait_time_altas()
+	creaHerba(herbaAltaModelo, herbasAltas, barraAlta, timerAlta, true)
 
 func _on_segundos_timeout():
 	if !game_over:
