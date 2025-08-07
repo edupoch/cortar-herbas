@@ -170,6 +170,23 @@ func _baixa_tixeira():
 	tixeiraEnBarraAlta = false
 	contador_ticks_alta = 0
 
+func _comproba_corte(herbasAux, barraAux):
+	var houboCorte = false
+	
+	for herba in herbasAux:
+		if herba.get_node("Area2D").has_overlapping_areas() and herba.get_node("Area2D").get_overlapping_areas().has(tixeira.get_node("Area2D")):
+			print("Cortada herba")
+			contador_herbas_cortadas = contador_herbas_cortadas + 1
+			_actualiza_contador_herbas()
+			barraAux.remove_child(herba)
+			herbasAux.erase(herba)
+			houboCorte = true
+			$Contador/TextoOk.visible = true
+			$Contador/ContadorEspazo.text = str(maxHerbasACortar - contador_herbas_cortadas)
+			break
+			
+	return houboCorte
+
 func _process(_delta):
 	if !game_over:
 		if (tixeiraEnBarraAlta):
@@ -189,33 +206,13 @@ func _process(_delta):
 		if Input.is_action_just_pressed("ui_accept") and !analizando_corte:
 			analizando_corte = true
 			print("Pulsado espacio")
-			var huboCorte = false
+			var houboCorte = false
 			
-			for herba in herbas:
-				if herba.get_node("Area2D").has_overlapping_areas() and herba.get_node("Area2D").get_overlapping_areas().has(tixeira.get_node("Area2D")):
-					print("Cortada herba")
-					contador_herbas_cortadas = contador_herbas_cortadas + 1
-					_actualiza_contador_herbas()
-					barra.remove_child(herba)
-					herbas.erase(herba)
-					huboCorte = true
-					$Contador/TextoOk.visible = true
-					$Contador/ContadorEspazo.text = str(maxHerbasACortar - contador_herbas_cortadas)
-					break
+			houboCorte = _comproba_corte(herbas, barra)
+			if !houboCorte:
+				houboCorte = _comproba_corte(herbasAltas, barraAlta)			
 					
-			for herba in herbasAltas:
-				if herba.get_node("Area2D").has_overlapping_areas() and herba.get_node("Area2D").get_overlapping_areas().has(tixeira.get_node("Area2D")):
-					print("Cortada herba alta")
-					contador_herbas_cortadas = contador_herbas_cortadas + 1
-					_actualiza_contador_herbas()
-					barraAlta.remove_child(herba)
-					herbasAltas.erase(herba)
-					huboCorte = true
-					$Contador/TextoOk.visible = true
-					$Contador/ContadorEspazo.text = str(maxHerbasACortar - contador_herbas_cortadas)
-					break
-					
-			if !huboCorte:
+			if !houboCorte:
 				$Contador/TextoFallaches.visible = true
 				contador_tempo = max(contador_tempo - 10, 0)
 				_actualiza_contador_tempo()
